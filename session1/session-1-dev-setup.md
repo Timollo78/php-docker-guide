@@ -143,7 +143,7 @@ RUN  pecl install xdebug-3.3.2 \
 
 ### Configuring Xdebug
 
-Now that Xdebug is installed, we need to configure it. Create an `xdebug.ini` file next to the Dockerfile:
+Now that Xdebug is installed in the container image, we need to configure it. Create an `xdebug.ini` file next to the Dockerfile:
 
 ```bash
 vi xdebug.ini
@@ -170,7 +170,7 @@ FROM php:8.3-apache
 RUN  pecl install xdebug-3.3.2 \
      && docker-php-ext-enable xdebug
 
-COPY php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 ```
 
 ### Building the Docker Image
@@ -262,7 +262,7 @@ RUN  docker-php-ext-install mysqli \
      && pecl install xdebug-3.3.2 \
      && docker-php-ext-enable xdebug
 
-COPY php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY ./xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 ```
 
 After a rebuild of our image and a restart of our services we should now see the mysqli-extension enabled on `localhost:85/phpinfo.php`
