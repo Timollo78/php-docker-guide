@@ -1,0 +1,43 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 85:8080
+    networks:
+      - internal
+    volumes:
+      - ../public/:/var/www/html/
+      - ../logs/nginx:/var/log/nginx/
+
+  php:
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    networks:
+      - internal
+    volumes:
+      - ../public/:/var/www/html/
+      - ../logs/php.log:/var/log/fpm-php.www.log
+
+  mariadb:
+    image: mariadb:10.6
+    networks:
+      - internal
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=1234
+      - MARIADB_DATABASE=mydb
+      - MARIADB_USER=myuser
+      - MARIADB_PASSWORD=mY-s3cr3t
+    ports:
+      - 3378:3306
+
+volumes:
+  mariadb-data:
+
+networks:
+  internal:
+    driver: bridge

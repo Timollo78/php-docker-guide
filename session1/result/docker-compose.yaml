@@ -1,0 +1,24 @@
+services:
+  web:
+    # docker build -t php8.3-apache-xdebug .
+    image: php8.3-apache-xdebug
+    volumes:
+      - ./web:/var/www/html
+    ports:
+      - 85:80
+
+  mariadb:
+    image: mariadb:10.6
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=1234
+      - MARIADB_DATABASE=mydb
+      - MARIADB_USER=myuser
+      - MARIADB_PASSWORD=mY-s3cr3t
+    ports:
+      - 3378:3306
+
+volumes:
+  mariadb-data:
+

@@ -255,7 +255,9 @@ services:
       - ./logs/nginx:/var/log/nginx/
 
   php:
-    image: php:8.3-fpm
+    build:
+      context: .
+      dockerfile: php/Dockerfile
     networks:
       - internal
     volumes:
