@@ -14,6 +14,7 @@ services:
   php:
     build:
       context: .
+      target: php-dev
       dockerfile: php/Dockerfile
     networks:
       - internal
