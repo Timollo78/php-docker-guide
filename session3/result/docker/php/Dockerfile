@@ -1,21 +1,20 @@
 FROM php:8.3-fpm AS php-prod
 
-# Arguments for user configuration
 ARG UID=1000
 ARG GID=1000
 ARG USER_NAME=phpuser
 
 # Create a new user and group
-RUN groupadd -g $GID phpuser && useradd -u $UID -g phpuser -s /bin/sh -m $USER_NAME
+RUN groupadd -g $GID -o $USER_NAME && useradd -u $UID -g $USER_NAME -s /bin/sh -m -o $USER_NAME
 
 # Install required PHP extensions
-RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
 # Switch to non-root user for security
 USER $USER_NAME
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Start PHP-FPM in foreground
+CMD ["php-fpm", "-F"]
 
 # Development image with Xdebug
 FROM php-prod AS php-dev
@@ -24,8 +23,9 @@ FROM php-prod AS php-dev
 USER root
 
 # Install and enable Xdebug
-RUN pecl install xdebug-3.3.2 \
-    && docker-php-ext-enable xdebug
+RUN pecl install -o -f xdebug-3.3.2 \
+    && docker-php-ext-enable xdebug \
+    && rm -rf /tmp/pear
 
 # Copy Xdebug configuration
 COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
@@ -34,5 +34,4 @@ COPY xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 USER $USER_NAME
 
 # Start PHP-FPM
-CMD ["php-fpm"]
-
+CMD ["php-fpm", "-F"]
