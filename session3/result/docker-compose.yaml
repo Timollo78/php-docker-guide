@@ -1,3 +1,4 @@
+# use variables from .env file
 services:
   php:
     build:

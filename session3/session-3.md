@@ -15,6 +15,8 @@ map $cookie_XDEBUG_SESSION $my_fastcgi_pass {
 
 ## .env file
 
+explain .env file
+
 ## directory structure
 
 ```
