@@ -1,3 +1,4 @@
 session2/result/logs/nginx/*.log
 session3/result/logs/nginx/*.log
 tools/*
+.obsidian

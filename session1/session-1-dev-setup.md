@@ -139,7 +139,7 @@ RUN  pecl install xdebug-3.3.2 \
 
 * **`FROM php:8.3-apache`**: Specifies the base image for the new image, which is the official PHP 8.3 image with Apache.
 * **`RUN pecl install xdebug-3.3.2`**: Installs Xdebug version 3.3.2 using the PECL package manager.
-- **`&& docker-php-ext-enable xdebug`**: Enables the Xdebug extension in the PHP configuration.
+* **`&& docker-php-ext-enable xdebug`**: Enables the Xdebug extension in the PHP configuration.
 
 ### Configuring Xdebug
 
@@ -157,7 +157,8 @@ zend_extension=xdebug ; Load the Xdebug extension
 xdebug.mode=debug,profile,trace 
 ; Activate Xdebug only when XDEBUG_TRIGGER is set
 xdebug.start_with_request=trigger
-; Host IP for remote debugging in Docker. (You can use host.docker.internal on Docker Desktop or check your local IP (e.g., ifconfig on Linux, ipconfig on Windows))
+; IDE callback: the hostname is injected by Docker Desktop on macOS/Windows, 
+; and we add it for Linux via `extra_hosts` in the docker-compose.yaml
 xdebug.client_host=host.docker.internal 
 ```
 
@@ -205,6 +206,18 @@ services:
       - ./web:/var/www/html
     ports:
       - 85:80
+
+    # ────────────────────────────────────────────────────────────────────────────────
+    # This block is needed only on **native Linux**, so that Xdebug (or other services)
+    # can reach your IDE from inside the container using the alias `host.docker.internal`.
+    #
+    # Docker Desktop on **macOS/Windows** already provides this alias automatically.
+    #
+    # - If you don’t need it, remove the entire block or replace it with `extra_hosts: []`
+    #   to keep the YAML file valid.
+    # ────────────────────────────────────────────────────────────────────────────────
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 ```
 
 ### Verifying Xdebug
@@ -217,7 +230,7 @@ Now we have a web server running PHP with the Xdebug extension. However, we like
 
 ### Add The Mariadb Container
 
-Lets search for an official mariadb image on [dockerhub](https://hub.docker.com/_/mariadb) and add an additional service to our docker-compose.yaml
+Let`s search for an official mariadb image on [dockerhub](https://hub.docker.com/_/mariadb) and add an additional service to our docker-compose.yaml
 
 ```yaml
 services:
@@ -227,6 +240,18 @@ services:
       - ./web:/var/www/html
     ports:
       - 85:80
+
+    # ────────────────────────────────────────────────────────────────────────────────
+    # This block is needed only on **native Linux**, so that Xdebug (or other services)
+    # can reach your IDE from inside the container using the alias `host.docker.internal`.
+    #
+    # Docker Desktop on **macOS/Windows** already provides this alias automatically.
+    #
+    # - If you don’t need it, remove the entire block or replace it with `extra_hosts: []`
+    #   to keep the YAML file valid.
+    # ────────────────────────────────────────────────────────────────────────────────
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
   mariadb:
     image: mariadb:10.6
@@ -255,7 +280,7 @@ The `environment` section added to the MariaDB service defines environment varia
 
 Now that we have a database container set up, we need to install the PHP `mysqli` extension to utilize it. To do this, we will modify the Dockerfile by adding `docker-php-ext-install mysqli`.
 
-```dockerfile
+```Dockerfile
 FROM php:8.3-apache
 
 RUN  docker-php-ext-install mysqli \

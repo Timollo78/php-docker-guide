@@ -21,6 +21,18 @@ services:
       - ./web/:/var/www/html/
       - ./logs/php.log:/var/log/fpm-php.www.log
 
+    # ────────────────────────────────────────────────────────────────────────────────
+    # This block is needed only on **native Linux**, so that Xdebug (or other services)
+    # can reach your IDE from inside the container using the alias `host.docker.internal`.
+    #
+    # Docker Desktop on **macOS/Windows** already provides this alias automatically.
+    #
+    # - If you don’t need it, remove the entire block or replace it with `extra_hosts: []`
+    #   to keep the YAML file valid.
+    # ────────────────────────────────────────────────────────────────────────────────
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   mariadb:
     image: mariadb:10.6
     networks:
